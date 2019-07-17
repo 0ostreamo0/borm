@@ -346,7 +346,7 @@ func (t *BormTable) Select(res interface{}, args ...BormItem) (int, error) {
 
 	if !isArray {
 		// fire
-		err := t.DB.QueryRowContext(t.ctx, item.SQL, stmtArgs...).Scan(item.Cols...)
+		err := t.DB.QueryRow(t.ctx, item.SQL, stmtArgs...).Scan(item.Cols...)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				return 0, nil
@@ -357,7 +357,7 @@ func (t *BormTable) Select(res interface{}, args ...BormItem) (int, error) {
 	}
 
 	// fire
-	rows, err := t.DB.QueryContext(t.ctx, item.SQL, stmtArgs...)
+	rows, err := t.DB.Query(t.ctx, item.SQL, stmtArgs...)
 	if err != nil {
 		return 0, err
 	}
@@ -538,7 +538,7 @@ func (t *BormTable) insert(prefix string, objs interface{}, args []BormItem) (in
 		log.Println(sb.String(), stmtArgs)
 	}
 
-	res, err := t.DB.ExecContext(t.ctx, sb.String(), stmtArgs...)
+	res, err := t.DB.Exec(t.ctx, sb.String(), stmtArgs...)
 	if err != nil {
 		return 0, err
 	}
@@ -676,7 +676,7 @@ func (t *BormTable) Update(obj interface{}, args ...BormItem) (int, error) {
 		log.Println(sb.String(), stmtArgs)
 	}
 
-	res, err := t.DB.ExecContext(t.ctx, sb.String(), stmtArgs...)
+	res, err := t.DB.Exec(t.ctx, sb.String(), stmtArgs...)
 	if err != nil {
 		return 0, err
 	}
@@ -712,7 +712,7 @@ func (t *BormTable) Delete(args ...BormItem) (int, error) {
 		log.Println(sb.String(), stmtArgs)
 	}
 
-	res, err := t.DB.ExecContext(t.ctx, sb.String(), stmtArgs...)
+	res, err := t.DB.Exec(t.ctx, sb.String(), stmtArgs...)
 	if err != nil {
 		return 0, err
 	}
@@ -744,9 +744,9 @@ func (t *BormTable) inputArgs(stmtArgs *[]interface{}, cols []reflect2.StructFie
 }
 
 type BormDBIFace interface {
-	QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row
-	QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
-	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+	QueryRow(ctx context.Context, query string, args ...interface{}) *sql.Row
+	Query(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
+	Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
 }
 
 type BormTable struct {
